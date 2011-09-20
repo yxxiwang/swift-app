@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block head1 %}
+Welcome to swift system~~
+{% endblock %}
+{% block context %}
+{% if form.errors %}
+<p>
+There are some errors {{form.errosr|pluralize}} below.
+
+</p>
+{% endif %}
+{% if incorrect %}
+<p>Your username or passwd maybe incorrect</p>
+{% endif %}
+<form action="" method="post">
+    <table>
+        {{form.as_table}}
+    </table>
+    <input type="submit" value="Submit"/>
+</form>
+{% endblock %}
+{% block footer%}please login first{% endblock%}
