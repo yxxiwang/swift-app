@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.contrib import auth
 from swift_app.login_form import Login_Form
+from swift_app import utils
 
 def login(request):
     if request.user.is_authenticated():
@@ -21,6 +22,9 @@ def login(request):
             return render_to_response('login.html',{'form':form})
         username = request.POST.get('username','')
         password = request.POST.get('password', '')
+        con = utils.Connection(username,password)
+        auth_url, auth_token = con.get_auth()
+        open(utils.FILE_PATH,'w').writelines([auth_url+'\n',auth_token])
         user = auth.authenticate(username=username, password=password)
         if user is not None and user.is_active:
             auth.login(request,user)
@@ -40,7 +44,9 @@ def already_logged(request):
 
 @login_required
 def control_panel(request):
-    return render_to_response('control_panel.html')
+    container_list = utils.get_container_list()
+    return render_to_response('control_panel.html',
+            {'container_list':container_list})
 
 def logout(request):
     auth.logout(request)

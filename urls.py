@@ -8,9 +8,10 @@
 #****************************************************
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 from django.conf.urls.defaults import *
+import os
 
 urlpatterns = patterns('swift_app.views',
     # Example:
@@ -20,9 +21,11 @@ urlpatterns = patterns('swift_app.views',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
+     (r'^admin/', include(admin.site.urls)),
     (r'^login/$', 'login'),
     (r'^logout/$', 'logout'),
     (r'^already-logged/$','already_logged'),
     (r'^control-panel/$','control_panel'),
 )
+urlpatterns+=patterns('',
+        (r'^medias/(?P<path>.*)$','django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'medias')}),)
