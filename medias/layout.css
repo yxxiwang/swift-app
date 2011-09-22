@@ -1,14 +1,22 @@
 body { font-family:Verdana; font-size:14px; margin:0;}
 
 #container {margin:0 auto; width:900px;}
-#header { height:100px; background:#6cf; margin-bottom:5px;}
+#header { height:100px; background:#ed8500 ; margin-bottom:5px;}
 #mainContent { height:500px; margin-bottom:5px;}
-#sidebar { float:left; width:20%; height:500px; background:#9ff;}
-#select {
+#sidebar { float:left; width:20%; height:500px; background:#fc9200;}
+#select1 {
     float:left;
     width:100%;
-    background:#9ff;
+    background:#ffcc70;
+}
+#select2 {
+    float:left;
+    width:100%;
+    background:#ffcc70;
+}
+option{
+    border-style:inset;
 }
 
-#content { float:right; width:80%; height:500px; background:#cff;}
-#footer { height:60px; background:#6cf;}
+#content { float:right; width:80%; height:500px; background:#ffcc70;}
+#footer { height:60px; background:#c47c00;}

@@ -60,17 +60,22 @@ def control_panel(request):
 def operation(request):
     """对swift的后台操作"""
     q = request.GET.get('q','')
+    name = request.GET.get('name','')
     if q=='cc':#创建container
-        name = request.GET.get('name','')
         try:
             client.put_container(utils.auth_url, utils.auth_token, name)
         except client.ClientException:
             return HttpResponse('failure')
-    if q=='dc': #删除container
-        name = request.GET.get('name',)
-        print name
+    elif q=='dc': #删除container
         try:
             client.delete_container(utils.auth_url, utils.auth_token, name)
+        except client.ClientException:
+            return HttpResponse('failure')
+    elif q=='lo': #列出container中的object
+        try:
+            object_list = utils.get_object_list(name)
+            name_list = '\n'.join([obj.get_name() for obj in object_list])
+            return HttpResponse(name_list)
         except client.ClientException:
             return HttpResponse('failure')
     return HttpResponse('success')

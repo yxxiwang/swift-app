@@ -14,10 +14,11 @@
             }
 
 $(document).ready(function (){
+        $('#select1').get(0).size = $('#select1>option').length;
 
         $("#delContainer").click(function (){
             //删除列表中选定的container
-            var opt = $('#select').get(0).options;
+            var opt = $('#select1').get(0).options;
             if (opt.selectedIndex==-1){
             alert("请先选中一个container");
             return;
@@ -27,8 +28,10 @@ $(document).ready(function (){
             return;
             }
             //dc=delete_container
-            $.get('/operation?q=dc&name='+opt[opt.selectedIndex].text ,
-                function (){$("#select option:selected").remove()});
+            $.get('/operation?q=dc&name='+opt[opt.selectedIndex].value ,
+                function (){$("#select1 option:selected").remove();
+                $('#select1').get(0).size=$('#select1').get(0).options.length;
+                });
             });
 
         $("#addContainer").click(function (){
@@ -41,15 +44,38 @@ $(document).ready(function (){
                 alert("container编码后长度要小于256且不能以/开头");
                 return;
                 }
-                var opts = $('#select').get(0).options;
+                var opts = $('#select1').get(0).options;
                 for(i=0;i<opts.length;i++){
-                if(opts[i].text==text){
+                if(opts[i].value==text){
                 alert("该container已存在");
                 return ;
                 }
                 }
-                $.get('/operation?q=cc&name='+text,function (res,status){ opts.add(new Option(text));}); //cc=create_container
+                opt = new Option(text+'('+0+')');
+                opt.value= text;
+                $.get('/operation?q=cc&name='+text,function (res){ opts.add(opt);$('#select1').get(0).size=opts.length;}); //cc=create_container
         });
+
+        $("#select1").change(function (){
+                //选中的container变化时显示里面的object列表
+                var value = $("#select1 option:selected").val();
+                $.get('/operation?q=lo&name='+value,function (res){
+                    $('#select2>option').remove();
+                    var objs = res.split('\n');
+                    if (objs.length==1)
+                        $('#select2').get(0).size = objs.length+1;
+                    else
+                        $('#select2').get(0).size = objs.length;
+                    for(obj in objs){
+                    $('#select2').append(
+                        "<option value="+objs[obj]+">"+objs[obj]+
+                        "</option>"
+                        ).hide().slideDown();
+                    }
+                    });
+                });
+        $("#select2").change(function (){
+                });
 });
 </script>
         </head>
@@ -63,14 +89,15 @@ $(document).ready(function (){
                         value="删除选中container"/>
                         <input type="button" id="addContainer"
                         value="添加一个container"/>
-                        <select id="select" name="" size=26>
+                        <select id="select1" name="" >
                             {% for container in container_list%}
                             <option value={{container.get_name}}>{{container.get_display_text}}</option>
                             {% endfor%}
                         </select>
                     </div>
                     <div id="content">
-                        <p>test</p>
+                        <select id="select2" name="" >
+                        </select>
                     </div>
                 </div>
                 <div id="footer">This is the footer</div>
