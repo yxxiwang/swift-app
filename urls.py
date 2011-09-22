@@ -26,6 +26,8 @@ urlpatterns = patterns('swift_app.views',
     (r'^logout/$', 'logout'),
     (r'^already-logged/$','already_logged'),
     (r'^control-panel/$','control_panel'),
+    #(r'^temp/$','temp'),
+    (r'^operation/$','operation'),
 )
 urlpatterns+=patterns('',
         (r'^medias/(?P<path>.*)$','django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'medias')}),)

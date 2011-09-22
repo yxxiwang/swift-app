@@ -1,66 +1,79 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title></title>
-<link href="/medias/layout.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="/medias/jquery.js"></script>
-<script type="text/javascript">
-    $(document).ready(function (){
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title></title>
+        <link href="/medias/layout.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="/medias/jquery.js"></script>
+        <script type="text/javascript">
+            function valid_container(c){
+                //验证container名字是否合法
+                if (escape(c).length>255 ||c.charAt(0)=="/"){
+                    return false;
+                }
+            }
 
-    $("#delContainer").click(function (){
-        //删除列表中选定的container
-        var opt = $('#select').get(0).options;
-        if (opt.selectedIndex==-1){
+$(document).ready(function (){
+
+        $("#delContainer").click(function (){
+            //删除列表中选定的container
+            var opt = $('#select').get(0).options;
+            if (opt.selectedIndex==-1){
             alert("请先选中一个container");
             return;
-        }
-        var flag = window.confirm("确定要删除选中container？（不可撤销操作）")
-        if (!flag){
+            }
+            var flag = window.confirm("确定要删除选中container？（不可撤销操作）")
+            if (!flag){
             return;
-        }
-        $("#select option:selected").remove();
-    });
+            }
+            //dc=delete_container
+            $.get('/operation?q=dc&name='+opt[opt.selectedIndex].text ,
+                function (){$("#select option:selected").remove()});
+            });
 
-   $("#addContainer").click(function (){
-        //添加一个container
-        var text = window.prompt("输入container名字");
-        if(text==null){
-            return ;
-        }
-        var opts = $('#select').get(0).options;
-        for(i=0;i<opts.length;i++){
-            if(opts[i].text==text){
+        $("#addContainer").click(function (){
+                //添加一个container
+                var text = window.prompt("输入container名字");
+                if(text==null || text.match(/^\s*$/)){
+                return ;
+                }
+                else if(valid_container(text)==false){
+                alert("container编码后长度要小于256且不能以/开头");
+                return;
+                }
+                var opts = $('#select').get(0).options;
+                for(i=0;i<opts.length;i++){
+                if(opts[i].text==text){
                 alert("该container已存在");
                 return ;
-            }
-        }
-        opts.add(new Option(text));
-    });
-    });
+                }
+                }
+                $.get('/operation?q=cc&name='+text,function (res,status){ opts.add(new Option(text));}); //cc=create_container
+        });
+});
 </script>
-</head>
+        </head>
 
-<body>
-<div id="container">
-  <div id="header">This is the Header</div>
-  <div id="mainContent">
-      <div id="sidebar">
-          <input type="button" id="delContainer"
-          value="删除选中container"/>
-          <input type="button" id="addContainer"
-          value="添加一个container"/>
-          <select id="select" name="" size=26>
-              {% for container in container_list%}
-              <option value={{container.get_name}}>{{container.get_name}}</option>
-              {% endfor%}
-          </select>
-      </div>
-      <div id="content">
-      <p>test</p>
-      </div>
-  </div>
-  <div id="footer">This is the footer</div>
-</div>
-</body>
-</html>
+        <body>
+            <div id="container">
+                <div id="header">This is the Header</div>
+                <div id="mainContent">
+                    <div id="sidebar">
+                        <input type="button" id="delContainer"
+                        value="删除选中container"/>
+                        <input type="button" id="addContainer"
+                        value="添加一个container"/>
+                        <select id="select" name="" size=26>
+                            {% for container in container_list%}
+                            <option value={{container.get_name}}>{{container.get_display_text}}</option>
+                            {% endfor%}
+                        </select>
+                    </div>
+                    <div id="content">
+                        <p>test</p>
+                    </div>
+                </div>
+                <div id="footer">This is the footer</div>
+            </div>
+        </body>
+    </html>

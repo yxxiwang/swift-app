@@ -4,11 +4,14 @@
 # Author: 徐叶佳 - xyj.asmy@gmail.com
 # Last modified: 2011-09-21 19:59
 # Filename: workspace/swift_app/utils.py
-# Description:
+# Description:一些辅助类和方法
 #****************************************************
 from swift.common import client
 
-FILE_PATH = 'temp'
+#FILE_PATH = 'temp'
+URL = 'http://127.0.0.1:8080/auth/v1.0'
+auth_url = ''
+auth_token = ''
 
 class Container(object):
     def __init__(self,size,obj_count,name):
@@ -29,6 +32,10 @@ class Container(object):
 
     def get_obj_count(self):
         return self.obj_count
+
+    def get_display_text(self):
+        text = '%s(%s)'%(self.get_name(),self.get_obj_count())
+        return text
 
 class Object(object):
     """
@@ -51,7 +58,6 @@ class Object(object):
         return self.name
 
 def get_container_list():
-    auth_url, auth_token = file(FILE_PATH).read().split()
     item_list = client.get_account(auth_url, auth_token)[1]
     container_list = []
     for item in item_list:
@@ -60,7 +66,6 @@ def get_container_list():
     return container_list
 
 def get_object_list(container):
-    auth_url, auth_token = file(FILE_PATH).read().split()
     item_list = client.get_container(auth_url, auth_token, container)[1]
     object_list = []
     for item in item_list:

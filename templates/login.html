@@ -10,6 +10,11 @@ There are some errors {{form.errosr|pluralize}} below.
 
 </p>
 {% endif %}
+{% if swift_no_start%}
+<p>
+Please start the swift first.
+</p>
+{% endif %}
 {% if incorrect %}
 <p>Your username or passwd maybe incorrect</p>
 {% endif %}
