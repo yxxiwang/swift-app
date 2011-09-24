@@ -5,10 +5,19 @@
     <title>
         {% block title %}{% endblock %}
     </title>
+    <script type="text/javascript" src='/media/jquery.js'></script>
+    <script type="text/javascript" src='/media/login.js'></script>
 </head>
 <body>
     <h1>{% block head1 %}{% endblock %}</h1>
-    {% block context %}{% endblock%}
+    {% block context %}
+    {% if form.errors %}
+    <p>
+    表单有错误
+    {{form.errosr|pluralize}}
+    </p>
+    {% endif %}
+    {% endblock%}
     <hr />
     {% block footer %}{% endblock%}
 </body>

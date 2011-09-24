@@ -2,7 +2,7 @@
 #coding=utf-8
 #****************************************************
 # Author: 徐叶佳 - xyj.asmy@gmail.com
-# Last modified: 2011-09-20 16:57
+# Last modified: 2011-09-24 23:07
 # Filename: workspace/swift_app/urls.py
 # Description:
 #****************************************************
@@ -23,11 +23,13 @@ urlpatterns = patterns('swift_app.views',
     # Uncomment the next line to enable the admin:
      (r'^admin/', include(admin.site.urls)),
     (r'^login/$', 'login'),
+    (r'^register/$','register'),
     (r'^logout/$', 'logout'),
     (r'^already-logged/$','already_logged'),
     (r'^control-panel/$','control_panel'),
     (r'^operation/$','operation'),
     (r'^upload/$','upload'),
+    (r'download/$','download'),
 )
 urlpatterns+=patterns('',
         (r'^medias/(?P<path>.*)$','django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'medias')}),)

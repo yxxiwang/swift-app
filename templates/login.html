@@ -1,22 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}登入{% endblock %}
 {% block head1 %}
-Welcome to swift system~~
+欢迎使用swift web管理系统
 {% endblock %}
 {% block context %}
-{% if form.errors %}
-<p>
-There are some errors {{form.errosr|pluralize}} below.
-
-</p>
-{% endif %}
 {% if swift_no_start%}
 <p>
-Please start the swift first.
+请先启动swift
 </p>
 {% endif %}
 {% if incorrect %}
-<p>Your username or passwd maybe incorrect</p>
+<p>用户名或密码错误</p>
 {% endif %}
 <fieldset>
     <legend>登入</legend>
@@ -24,7 +18,9 @@ Please start the swift first.
     <table>
         {{form.as_table}}
     </table>
-    <input type="submit" value="Submit"/>
+    <input type="submit" value="登入"/>
+    <input type="button" id='registerBtn' value="注册"
+    onclick="javascript:window.location.href='/register'"/>
 </form>
 </fieldset>
 {% endblock %}

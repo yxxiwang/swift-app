@@ -2,16 +2,19 @@
 #coding=utf-8
 #****************************************************
 # Author: 徐叶佳 - xyj.asmy@gmail.com
-# Last modified: 2011-09-21 19:59
+# Last modified: 2011-09-24 23:06
 # Filename: workspace/swift_app/utils.py
 # Description:一些辅助类和方法
 #****************************************************
 from swift.common import client
+import os
+import zipfile
 
 #FILE_PATH = 'temp'
 URL = 'http://127.0.0.1:8080/auth/v1.0'
 auth_url = ''
 auth_token = ''
+temp_dir = os.path.join(os.path.dirname(__file__),'temp')
 
 class Container(object):
     def __init__(self,size,obj_count,name):
@@ -72,6 +75,43 @@ def get_object_list(container):
         object_list.append(Object(item['bytes']
             ,item['last_modified'], item['name']))
     return object_list
+
+def download_single_file(container_name, obj_name):
+    """下载单个object"""
+    for f in os.listdir(temp_dir):
+        os.remove(os.path.join(temp_dir,f))
+    try:
+        content = client.get_object(auth_url, auth_token,
+                container_name, obj_name)[1]
+        temp_file_path = os.path.join(temp_dir, obj_name)
+        temp = open(temp_file_path, 'wb+')
+        temp.write(content)
+        temp.close()
+        return temp_file_path
+    except client.ClientException:
+        return 'failure'
+
+def download_multi_files(container_name,objs):
+    """将多个objets打包成zip文件下载"""
+    for f in os.listdir(temp_dir):
+        os.remove(os.path.join(temp_dir,f))
+    temp_zip_path = os.path.join(temp_dir, 'all_in_one.zip')
+    zip = zipfile.ZipFile(temp_zip_path,'w',zipfile.ZIP_DEFLATED)
+    for obj in objs:
+        try:
+            content = client.get_object(auth_url, auth_token,
+                    container_name, obj)[1]
+        except client.ClientException:
+            return 'failure'
+        temp_file_path = os.path.join(temp_dir, obj.encode('utf-8'))
+        temp = open(temp_file_path, 'wb+')
+        temp.write(content)
+        temp.close()
+        zip.write(temp_file_path, obj)
+        os.remove(temp_file_path)
+    zip.close()
+    return temp_zip_path
+
 
 
 if __name__ == '__main__':

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}注册{% endblock%}
+{% block head1%}
+用户注册
+{% endblock%}
+{% block context %}
+<fieldset>
+    <legend>注册</legend>
+    <form action="" method='post'>
+        <table>
+            {{form.as_table}}
+        </table>
+        <input type="submit" value="注册"/>
+    </form>
+
+</fieldset>
+{% endblock%}
