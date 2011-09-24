@@ -1,22 +1,18 @@
 body { font-family:Verdana; font-size:14px; margin:0;}
 
 #container {margin:0 auto; width:900px;}
-#header { height:100px; background:#ed8500 ; margin-bottom:5px;}
+#header { height:100px; background:#c2bfbf ; margin-bottom:5px;}
 #mainContent { height:500px; margin-bottom:5px;}
-#sidebar { float:left; width:20%; height:500px; background:#fc9200;}
+#sidebar { float:left; width:20%; height:500px; background:#ded6db ;}
 #select1 {
     float:left;
     width:100%;
-    background:#ffcc70;
-}
-#select2 {
-    float:left;
-    width:100%;
-    background:#ffcc70;
+   background:#ded6db;
 }
 option{
     border-style:inset;
 }
 
-#content { float:right; width:80%; height:500px; background:#ffcc70;}
-#footer { height:60px; background:#c47c00;}
+#content { float:right; width:80%; height:500px; background:#ede6e8;overflow:auto;}
+
+#footer { height:60px; background:#c2bfbf;}

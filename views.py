@@ -13,6 +13,7 @@ from django.contrib import auth
 from swift.common import client
 from swift_app.login_form import Login_Form
 from swift_app import utils
+import os
 
 def login(request):
     if request.user.is_authenticated():
@@ -74,11 +75,49 @@ def operation(request):
     elif q=='lo': #列出container中的object
         try:
             object_list = utils.get_object_list(name)
-            name_list = '\n'.join([obj.get_name() for obj in object_list])
-            return HttpResponse(name_list)
+            name_list = '#'.join([obj.get_name() for obj in object_list])
+            time_list = '#'.join([obj.get_last_modified() for obj in object_list])
+            size_list = '#'.join([str(obj.get_size()) for obj in object_list])
+            obj_list = '\n'.join([name_list,time_list,size_list])
+            return HttpResponse(obj_list)
         except client.ClientException:
             return HttpResponse('failure')
+    elif q=='do': #删除object
+        objs = name.split('^')
+        container_name = objs[-1:][0]
+        objs = objs[:-1]
+        for obj in objs:
+            try:
+                client.delete_object(utils.auth_url,utils.auth_token,
+                        container_name, obj)
+            except client.ClientException:
+                return HttpResponse('failure')
+        client.put_container(utils.auth_url,utils.auth_token,
+                container_name)
     return HttpResponse('success')
+
+@login_required
+def upload(request):
+    file_obj = request.FILES.get('file',None)
+    container_name = request.POST.get('container_name','')
+    """
+    temp_file_name = os.path.join(os.path.dirname(__file__), 'temp',file_obj.name)
+    temp_file = open(temp_file_name, 'wb+')
+    for chunk in file_obj.chunks():
+        temp_file.write(chunk)
+    temp_file.close()
+    """
+    client.put_object(utils.auth_url, utils.auth_token,
+            container_name, file_obj.name, file_obj)
+    client.put_container(utils.auth_url, utils.auth_token,
+            container_name)
+    """
+    if os.path.exists(temp_file_name):
+        os.remove(temp_file_name)
+    """
+    container_list = utils.get_container_list()
+    return render_to_response('control_panel.html',
+            {'container_list':container_list})
 
 
 def logout(request):

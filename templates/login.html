@@ -18,11 +18,14 @@ Please start the swift first.
 {% if incorrect %}
 <p>Your username or passwd maybe incorrect</p>
 {% endif %}
+<fieldset>
+    <legend>登入</legend>
 <form action="" method="post">
     <table>
         {{form.as_table}}
     </table>
     <input type="submit" value="Submit"/>
 </form>
+</fieldset>
 {% endblock %}
 {% block footer%}please login first{% endblock%}

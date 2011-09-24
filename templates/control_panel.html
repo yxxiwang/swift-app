@@ -5,102 +5,50 @@
         <title></title>
         <link href="/medias/layout.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="/medias/jquery.js"></script>
-        <script type="text/javascript">
-            function valid_container(c){
-                //验证container名字是否合法
-                if (escape(c).length>255 ||c.charAt(0)=="/"){
-                    return false;
-                }
-            }
+        <script type="text/javascript" src="/medias/jquery.blockUI.js"></script>
+        <script type="text/javascript" src="/medias/control-panel.js"></script>
+    </head>
 
-$(document).ready(function (){
-        $('#select1').get(0).size = $('#select1>option').length;
-
-        $("#delContainer").click(function (){
-            //删除列表中选定的container
-            var opt = $('#select1').get(0).options;
-            if (opt.selectedIndex==-1){
-            alert("请先选中一个container");
-            return;
-            }
-            var flag = window.confirm("确定要删除选中container？（不可撤销操作）")
-            if (!flag){
-            return;
-            }
-            //dc=delete_container
-            $.get('/operation?q=dc&name='+opt[opt.selectedIndex].value ,
-                function (){$("#select1 option:selected").remove();
-                $('#select1').get(0).size=$('#select1').get(0).options.length;
-                });
-            });
-
-        $("#addContainer").click(function (){
-                //添加一个container
-                var text = window.prompt("输入container名字");
-                if(text==null || text.match(/^\s*$/)){
-                return ;
-                }
-                else if(valid_container(text)==false){
-                alert("container编码后长度要小于256且不能以/开头");
-                return;
-                }
-                var opts = $('#select1').get(0).options;
-                for(i=0;i<opts.length;i++){
-                if(opts[i].value==text){
-                alert("该container已存在");
-                return ;
-                }
-                }
-                opt = new Option(text+'('+0+')');
-                opt.value= text;
-                $.get('/operation?q=cc&name='+text,function (res){ opts.add(opt);$('#select1').get(0).size=opts.length;}); //cc=create_container
-        });
-
-        $("#select1").change(function (){
-                //选中的container变化时显示里面的object列表
-                var value = $("#select1 option:selected").val();
-                $.get('/operation?q=lo&name='+value,function (res){
-                    $('#select2>option').remove();
-                    var objs = res.split('\n');
-                    if (objs.length==1)
-                        $('#select2').get(0).size = objs.length+1;
-                    else
-                        $('#select2').get(0).size = objs.length;
-                    for(obj in objs){
-                    $('#select2').append(
-                        "<option value="+objs[obj]+">"+objs[obj]+
-                        "</option>"
-                        ).hide().slideDown();
-                    }
-                    });
-                });
-        $("#select2").change(function (){
-                });
-});
-</script>
-        </head>
-
-        <body>
-            <div id="container">
-                <div id="header">This is the Header</div>
-                <div id="mainContent">
-                    <div id="sidebar">
-                        <input type="button" id="delContainer"
-                        value="删除选中container"/>
-                        <input type="button" id="addContainer"
-                        value="添加一个container"/>
-                        <select id="select1" name="" >
-                            {% for container in container_list%}
-                            <option value={{container.get_name}}>{{container.get_display_text}}</option>
-                            {% endfor%}
-                        </select>
-                    </div>
-                    <div id="content">
-                        <select id="select2" name="" >
-                        </select>
+    <body>
+        <div id="container">
+            <div id="header">This is the Header</div>
+            <div id="mainContent">
+                <div id="sidebar">
+                    <input type="button" id="delContainer"
+                    value="删除选中container"/>
+                    <input type="button" id="addContainer"
+                    value="添加一个container"/>
+                    <input type="button" id="download"
+                    value="下载选中container"/>
+                    <select id="select1" name="" >
+                        {% for container in container_list%}
+                        <option value={{container.get_name}}>{{container.get_display_text}}</option>
+                        {% endfor%}
+                    </select>
+                </div>
+                <div id="content" >
+                    <div id="objects"  >
+                        <input type="button" id='delObject' value="删除选中object"/>
+                        <input type="button" id='addObject' value="上传object"/>
+                        <div >
+                            <table id='table1' border=1 width=100% style="table-layout:fixed">
+                                <tr>
+                                    <th scope='cok'>object</th>
+                                    <th scope='cok'>大小(bytes)</th>
+                                    <th scope='cok'>上次修改时间</th>
+                                    <th scope='cok'>选中</th>
+                                </tr>
+                            </table>
+                        </div>
+                        <form action="/upload/" id="uploadForm" enctype="multipart/form-data" method="POST">
+                            <input type="file" name="file" id='file_field'/>
+                            <input type="text" name="container_name" id='container_name'/><!--隐藏的text域，用来向服务器提交当前container名字 -->
+                            <input type="submit" id='upbtn' value="开始上传" />
+                        </form>
                     </div>
                 </div>
-                <div id="footer">This is the footer</div>
             </div>
-        </body>
-    </html>
+            <div id="footer">This is the footer</div>
+        </div>
+    </body>
+</html>
