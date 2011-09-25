@@ -2,6 +2,9 @@ body { font-family:Verdana; font-size:14px; margin:0;}
 
 #container {margin:0 auto; width:900px;}
 #header { height:100px; background:#c2bfbf ; margin-bottom:5px;}
+#menu ul {float:right;list-style:none;margin:0px;}
+#menu ul li {float:right;margin:10px 10px;display:block;line-height:28px}
+.menuDiv {width:1px;height:28px;background:#999}
 #mainContent { height:500px; margin-bottom:5px;}
 #sidebar { float:left; width:20%; height:500px; background:#ded6db ;}
 #select1 {

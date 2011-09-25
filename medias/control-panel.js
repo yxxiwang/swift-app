@@ -18,9 +18,9 @@ function show_obj_list(){
             i--;
         }
         var items = res.split('\n');
-        name_list = items[0].split('#');
-        time_origin_list = items[1].split('#');
-        size_list = items[2].split('#');
+        name_list = items[0].split('^');
+        time_origin_list = items[1].split('^');
+        size_list = items[2].split('^');
         var time_list = new Array();
         for(var i=0;i<time_origin_list.length;i++){
             time_list[i]=time_origin_list[i].replace(/T/,'  ');
@@ -72,7 +72,7 @@ $(document).ready(function (){
     objs+=$('#select1 option:selected').val();
     //do=delete_object
     $.get('/operation?q=do&name='+objs, function(res){
-        if(res=='falure'){
+        if(res=='failure'){
             alert("删除失败");
         }
         else if(res=='success'){
@@ -106,7 +106,12 @@ $(document).ready(function (){
         }
     //dc=delete_container
     $.get('/operation?q=dc&name='+opt[opt.selectedIndex].value ,
-        function (){$("#select1 option:selected").remove();
+        function (res){
+            if(res=='failure') {
+                alert('删除失败');
+                return;
+            }
+            $("#select1 option:selected").remove();
             $('#select1').get(0).size=$('#select1').get(0).options.length;
         });
     });
@@ -131,6 +136,10 @@ $(document).ready(function (){
     opt = new Option(text+'('+0+')');
     opt.value= text;
     $.get('/operation?q=cc&name='+text,function (res){
+        if (res=='failure'){
+            alert('创建container失败');
+            return ;
+        }
         opts.add(opt);
         if (opts.length>=19){
             $('#select1').get(0).size=19;

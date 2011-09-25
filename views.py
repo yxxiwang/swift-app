@@ -2,12 +2,13 @@
 #coding=utf-8
 #****************************************************
 # Author: 徐叶佳 - xyj.asmy@gmail.com
-# Last modified: 2011-09-24 23:06
+# Last modified: 2011-09-25 17:12
 # Filename: workspace/swift_app/views.py
 # Description: 视图函数
 #****************************************************
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render_to_response
 from django.contrib import auth
@@ -46,6 +47,18 @@ def login(request):
     return render_to_response('login.html',{'form':form})
 
 def register(request):
+    if request.method == 'POST':
+        form = Register_Form(request.POST)
+        if not form.is_valid():
+            return render_to_response('register.html',{'form':form})
+        username = request.POST.get('username','')
+        password = request.POST.get('password','')
+        email = request.POST.get('email','')
+        if User.objects.filter(username=username):
+            return render_to_response('register.html',{'form':form,'msg':'该用户已存在'})
+        user = User.objects.create_user(username=username,password=password,email=email)
+        user.save()
+        return HttpResponseRedirect('/login')
     form = Register_Form()
     return render_to_response('register.html',{'form':form})
 
@@ -81,9 +94,9 @@ def operation(request):
     elif q=='lo': #列出container中的object
         try:
             object_list = utils.get_object_list(name)
-            name_list = '#'.join([obj.get_name() for obj in object_list])
-            time_list = '#'.join([obj.get_last_modified() for obj in object_list])
-            size_list = '#'.join([str(obj.get_size()) for obj in object_list])
+            name_list = '^'.join([obj.get_name() for obj in object_list])
+            time_list = '^'.join([obj.get_last_modified() for obj in object_list])
+            size_list = '^'.join([str(obj.get_size()) for obj in object_list])
             obj_list = '\n'.join([name_list,time_list,size_list])
             return HttpResponse(obj_list)
         except client.ClientException:
@@ -94,6 +107,7 @@ def operation(request):
         objs = objs[:-1]
         for obj in objs:
             try:
+                print container_name,obj
                 client.delete_object(utils.auth_url,utils.auth_token,
                         container_name, obj)
             except client.ClientException:
@@ -118,6 +132,7 @@ def download(request):
     objs = objs[:-1]
     if len(objs)==1:
     #只有一个文件要下载的情况
+        print objs[0]
         result = utils.download_single_file(container_name, objs[0])
         if result=='failure':
             return HttpResponse(result)
@@ -141,8 +156,16 @@ def download(request):
 @login_required
 def upload(request):
     """上传文件"""
+    illegal_char = ['+','^','#','&']
     file_obj = request.FILES.get('file',None)
     container_name = request.POST.get('container_name','')
+    name = ''
+    for c in file_obj.name:
+        if c in illegal_char:
+            name+= '_'
+        else:
+            name+= c
+    file_obj.name = name
     client.put_object(utils.auth_url, utils.auth_token,
             container_name, file_obj.name, file_obj)
     client.put_container(utils.auth_url, utils.auth_token,
