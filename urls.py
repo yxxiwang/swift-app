@@ -22,6 +22,7 @@ urlpatterns = patterns('swift_app.views',
 
     # Uncomment the next line to enable the admin:
      (r'^admin/', include(admin.site.urls)),
+     (r'^$','login'),
     (r'^login/$', 'login'),
     (r'^register/$','register'),
     (r'^logout/$', 'logout'),
