@@ -113,6 +113,9 @@ $(document).ready(function (){
             }
             $("#select1 option:selected").remove();
             $('#select1').get(0).size=$('#select1').get(0).options.length;
+            if ($('#select1').get(0).options.selectedIndex==-1){
+                $('#objects').hide();
+            }
         });
     });
 
@@ -146,6 +149,7 @@ $(document).ready(function (){
         }else{
             $('#select1').get(0).size=opts.length;
         }
+        show_obj_list()
     }); //cc=create_container
     });
 

@@ -166,10 +166,16 @@ def upload(request):
         else:
             name+= c
     file_obj.name = name
+    temp_file_path = os.path.join(utils.temp_dir, 'temp_up')
+    temp_file = open(temp_file_path,'wb')
+    for chunk in file_obj.chunks():
+        temp_file.write(chunk)
+    temp_file.close()
     client.put_object(utils.auth_url, utils.auth_token,
-            container_name, file_obj.name, file_obj)
+            container_name, file_obj.name, open(temp_file_path,'rb'))
     client.put_container(utils.auth_url, utils.auth_token,
             container_name)
+    os.remove(temp_file_path)
     return HttpResponseRedirect('/control-panel')
 
 def logout(request):
