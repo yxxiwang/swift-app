@@ -1,0 +1,25 @@
+#header{
+    width:250px;
+    margin:auto;
+}
+#warning{
+    color:red;
+    width:130px;
+    margin:auto;
+}
+#content{
+    width:500px;
+    margin:50px auto;
+}
+#table_form{
+    height:150px;
+    margin:auto;
+}
+#buttons{
+    float:right;
+}
+#footer{
+    height:50px;
+    text-align:right;
+    margin-top:300px;
+}

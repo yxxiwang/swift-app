@@ -17,8 +17,9 @@ $(document).ready(function (){
             alert('邮箱不符合格式');
             return false;
         }
-        if(username.length>20||password>16){
-            alert('用户名不能超过20字节，密码不能超过16字节')
+        if(username.length>20||password.length>16){
+            alert('用户名不能超过20字节，密码不能超过16字节');
+            return false;
         ;}
     });
 });

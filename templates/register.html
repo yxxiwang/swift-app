@@ -1,40 +1,49 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-    <title>
-        注册
-    </title>
-    <script type="text/javascript" src='/medias/jquery.js'></script>
-    <script type="text/javascript" src='/medias/register.js'></script>
-</head>
-<h1>用户注册</h1>
-<body>
-<fieldset>
-    <legend>注册</legend>
-    {% if form.errors %}
-    <p>
-    表单有误
-    {{form.errosr|pluralize}}
-    </p>
-    {% endif %}
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <title>
+            注册
+        </title>
+        <link rel="stylesheet" href="/medias/form-page.css" />
+        <script type="text/javascript" src='/medias/jquery.js'></script>
+        <script type="text/javascript" src='/medias/register.js'></script>
+    </head>
+    <body>
+        <div id="header"><h1>用户注册</h1></div>
+        <div id="warning">
+            {% if form.errors %}
+            <p>
+            表单有误
+            {{form.errosr|pluralize}}
+            </p>
+            {% endif %}
 
-    {% if msg%}
-    <p>{{msg}}</p>
-    {% endif%}
-    <form id='register_form' action="" method='post'>
-        <div >
-        <table >
-            {{form.as_table}}
-        </table>
-        <input type="submit" value="注册"/>
+            {% if msg%}
+            <p>{{msg}}</p>
+            {% endif%}
         </div>
-    </form>
+        <div id="content">
+            <fieldset>
+                <legend>注册</legend>
+                <form id='register_form' action="" method='post'>
+                    <div >
+                        <table id='table_form'>
+                            {{form.as_table}}
+                        </table>
+                        <div id="buttons">
+                            <input type="submit" value="注册"/>
+                            <input type="button" value='登录'
+                            onclick='javascript:window.location.href="/logout"'/>
+                        </div>
+                    </div>
+                </form>
 
-</fieldset>
-<div>
-<hr />
-<p>用户注册</p>
-</div>
-</body>
+            </fieldset>
+        </div>
+        <div id='footer'>
+            <hr />
+            <p>用户注册</p>
+        </div>
+    </body>
 </html>
