@@ -6,12 +6,14 @@
         <link href="/medias/layout.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="/medias/jquery.js"></script>
         <script type="text/javascript" src="/medias/jquery.blockUI.js"></script>
+        <script type="text/javascript" src='/medias/jquery.tablesorter.min.js'></script>
         <script type="text/javascript" src="/medias/control-panel.js"></script>
     </head>
 
     <body>
         <div id="container">
             <div id="header">
+                <div id="title"><h2>swift管理系统</h2></div>
                 　<div id="menu">
                     　　　<ul>
                         　　　　<li><a href="/logout">退出</a></li>
@@ -19,7 +21,7 @@
                         　　　　<li><a href="/register">注册新帐号</a></li>
                         　　　　<li class="menuDiv"></li>
                         　　　</ul>
-                    　　</div>
+                </div>
             </div>
             <div id="mainContent">
                 <div id="sidebar">
@@ -40,13 +42,25 @@
                         <input type="button" id="download"
                         value="下载选中object"/>
                         <div >
-                            <table id='table1' border=1 width=100% style="table-layout:fixed">
+                            <table id='table1' border=1 width=100% style="table-layout:fixed" class='tablesorter'>
+                                <thead>
                                 <tr>
-                                    <th scope='cok'>object</th>
-                                    <th scope='cok'>大小(bytes)</th>
-                                    <th scope='cok'>上次修改时间</th>
-                                    <th scope='cok'>选中</th>
+                                    <th scope='cok'>
+                                        object
+                                    </th>
+                                    <th scope='cok'>
+                                        大小(byte)
+                                    </th>
+                                    <th scope='cok'>
+                                        上次修改时间
+                                    </th>
+                                    <th scope='cok'>
+                                        选中
+                                    </th>
                                 </tr>
+                            </thead>
+                                    <tbody id='tbody'>
+                                    </tbody>
                             </table>
                         </div>
                         <form action="/upload/" id="uploadForm" enctype="multipart/form-data" method="POST">

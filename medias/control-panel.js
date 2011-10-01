@@ -24,10 +24,31 @@ function show_obj_list(){
         var time_list = new Array();
         for(var i=0;i<time_origin_list.length;i++){
             time_list[i]=time_origin_list[i].replace(/T/,'  ');
+            time = time_list[i].split(' ');
+            y_m_d = time[0].split('-');
+            h_m_s = time[2].split('.')[0].split(':');
+            new_date = new Date();
+            new_date.setFullYear(y_m_d[0],y_m_d[1],y_m_d[2]);
+            new_date.setHours(parseInt(h_m_s[0])+8);
+            new_date.setMinutes(h_m_s[1]);
+            new_date.setSeconds(h_m_s[2]);
+            year = new_date.getFullYear().toString();
+            month = new_date.getMonth().toString();
+            if (month.length==1) month='0'+month;
+            date = new_date.getDate().toString();
+            if (date.length==1) date='0'+date;
+            hour = new_date.getHours().toString();
+            if (hour.length==1) hour='0'+hour;
+            minute = new_date.getMinutes().toString();
+            if (minute.length==1) minute='0'+minute;
+            second = new_date.getSeconds().toString();
+            if (second.length==1) second='0'+second;
+            time_list[i] = year+'年'+month+'月'+date+'日'+hour+'时'+
+                    minute+'分'+second+'秒';
         }
         for(name in name_list){
             if(name_list[name]=='') break;
-            $('#table1').append(
+            $('#tbody').append(
                 "<tr><td style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
                 "</td>"+
                 "<td>"+size_list[name]+"</td>"+
@@ -37,6 +58,7 @@ function show_obj_list(){
                 );
         }
         $('#table1').fadeIn();
+        $('#table1').tablesorter();
     });
 }
 

@@ -1,6 +1,10 @@
+body{
+    background:#2D3134;
+}
 #header{
     width:250px;
     margin:auto;
+    color:#9EA059;
 }
 #warning{
     color:red;

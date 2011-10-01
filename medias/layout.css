@@ -1,22 +1,174 @@
-body { font-family:Verdana; font-size:14px; margin:0;}
-
-#container {margin:0 auto; width:900px;}
-#header { height:100px; background:#c2bfbf ; margin-bottom:5px;}
+body { font-family:Verdana; font-size:14px; margin:0px;background:#2D3134}
+#container {margin:0px auto; width:900px;}
+#header { height:100px; background:#46444B ; margin-bottom:5px;}
+#title{text-align:center;width:100%;}
 #menu ul {float:right;list-style:none;margin:0px;}
-#menu ul li {float:right;margin:10px 10px;display:block;line-height:28px;
-border:1px solid #CCC;}
+#menu ul li {float:right;margin:10px 10px;display:block;line-height:28px;}
+
 .menuDiv {width:1px;height:28px;background:#999}
 #mainContent { height:500px; margin-bottom:5px;}
-#sidebar { float:left; width:20%; height:500px; background:#ded6db ;}
+#sidebar { float:left; width:20%; height:500px; background:#505050 ;}
 #select1 {
     float:left;
     width:100%;
-   background:#ded6db;
+    background:#505050;
 }
 option{
-    border-style:inset;
+	width:100%;
+	height:24px;
+	line-height:24px;
+	padding:0 10px;
+
 }
 
-#content { float:right; width:80%; height:500px; background:#ede6e8;overflow:auto;}
+#content { float:right; width:80%; height:500px; background:#373536;overflow:auto;}
 
-#footer { height:60px; background:#c2bfbf;}
+#footer { height:60px; background:#5B5B5E;}
+
+input[type=button] {
+    font-family: Tahoma;
+    font-size:8pt; color: #003399;
+    border: 1px #003399 solid;
+    color:#1F1E20;
+    border-bottom: #93bee2 1px solid;
+    border-left: #93bee2 1px solid;
+    border-right: #93bee2 1px solid;
+    border-top: #93bee2 1px solid;
+    background-color: gray;
+    cursor: hand;
+    font-style: normal ;
+    height:22px;
+}
+
+a:link{
+	color: #fff;
+	font-size: 12px;
+	font-weight: bolder;
+	text-decoration: none;
+}
+a:hover{
+	font-size: 12px;
+	color:#FF6600;
+    font-weight: bold;
+	text-decoration: underline;
+}
+
+a:visited{
+	font-size: 12px;
+	color:#FF6600;
+    font-weight: bold;
+	text-decoration: line-through;
+}
+
+table {
+	font-family: Tahoma, Verdana, Arial;
+	border-collapse: collapse;
+	border-spacing: 1px;
+	border-left: 1px solid #1F2A34;
+	border-right: 1px solid #1F2A34;
+}
+thead th{
+	font-size: 14px;
+	color: #fff;
+	height: 30px;
+	text-align: center;
+	border-top: 5px solid black;
+	border-bottom: 5px solid black;
+	border-left: 1px solid #1F2A34;
+	border-right: 1px solid #1F2A34;
+}
+tbody td{
+	font-size: 10px;
+	background: #2d3134;
+	color: #fff;
+	border: 1px solid #373B3E;
+	padding-left: 3px;
+	height: 40px;
+}
+tbody td a:link{
+	font-size: 12px;
+	color:#FF6600;
+    font-weight: bold;
+	text-decoration: none;
+}
+
+tbody td a:hover{
+	font-size: 12px;
+	color:#FF6600;
+    font-weight: bold;
+	text-decoration: underline;
+}
+
+tbody td a:visited{
+	font-size: 12px;
+	color:#FF6600;
+    font-weight: bold;
+	text-decoration: line-through;
+}
+tbody th{
+	background: #373B3E;
+	color: #080808;
+	text-align: left;
+	padding-left: 4px;
+	border: 1px solid #2d3134;
+	width: 120px;
+}
+tbody th a:link{
+	color: #fff;
+	font-size: 12px;
+	font-weight: bolder;
+	text-decoration: none;
+}
+tbody th a:hover{
+	font-size: 13px;
+	color: #fff;
+	font-weight: bolder;
+
+}
+tbody th a:visited{
+	text-decoration: line-through;
+	font-size: 12px;
+	color: #fff;
+	font-weight: bolder;
+
+}
+tbody tr:hover{
+	background: #333;
+}
+tbody a[title^="Download"] { 	/*background: url('http://www.fitodotnet.com/csstablegallery/icon_attachment.gif') no-repeat center;
+	padding-top: 22px;*/
+	font-size: 12px;
+	color:#FF6600;
+	text-align: center;
+}
+tbody a[title^="Download"]:hover{
+	text-decoration: underline;
+	font-size: 12px;
+	color:#FF6600;
+}
+tbody a[title^="Download"]:visited{
+	text-decoration: line-through;
+	font-size: 12px;
+	color:#FF6600
+}
+tfoot{
+	background: #1F2A34;
+	color: #fff;
+	font-size: 18px;
+	text-align: center;
+	border-left: 1px solid #1F2A34;
+	border-right: 1px solid #1F2A34;
+}
+tfoot td{
+	font-style:italic;
+}
+table caption{
+	background: #1F2A34;
+	color: #fff;
+	text-align: center;
+	font-size: 24px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-left: 1px solid #1F2A34;
+	border-right: 1px solid #1F2A34;
+}
