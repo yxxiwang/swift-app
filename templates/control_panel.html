@@ -41,6 +41,13 @@
                         <input type="button" id='addObject' value="上传object"/>
                         <input type="button" id="download"
                         value="下载选中object"/>
+                        <label for="select2">大小显示单位：</label>
+                        <select id="select2" name="">
+                            <option value="byte">byte</option>
+                            <option value="kb">kb</option>
+                            <option value="M">M</option>
+                            <option value="G">G</option>
+                        </select>
                         <div >
                             <table id='table1' border=1 width=100% style="table-layout:fixed" class='tablesorter'>
                                 <thead>
@@ -54,7 +61,7 @@
                                     <th scope='cok'>
                                         上次修改时间
                                     </th>
-                                    <th scope='cok'>
+                                    <th scope='cok' id='all_select'>
                                         选中
                                     </th>
                                 </tr>

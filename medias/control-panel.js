@@ -1,9 +1,68 @@
+var origin_size = new Map();
+
+function Map(){
+    //map数据结构
+    var struct = function(key, value){
+        this.key = key;
+        this.value = value;
+    };
+
+    var put = function(key, value){
+        for (var i=0;i<this.attr.length;i++){
+            if(this.attr[i].key==key){
+                this.attr[i].value = value;
+                return ;
+            };
+        };
+        this.attr[this.attr.length] = new struct(key, value);
+    };
+
+    var get = function(key){
+        for (var i=0;i<this.attr.length;i++){
+            if (this.attr[i].key==key) return this.attr[i].value;
+        };
+        return null;
+    };
+
+    var size = function(){return this.attr.length;};
+
+    this.attr = new Array();
+    this.put = put;
+    this.get = get;
+}
+
 function valid_container(c){
     //验证container名字是否合法
     if (escape(c).length>255 ||c.charAt(0)=="/"){
         return false;
     }
 }
+
+function change_unit(){
+    var unit = $('#select2 option:selected').val();
+    var table = $('#table1').get(0);
+    var unit_title = table.rows[0].cells[1].innerHTML;
+    unit_title = unit_title.replace(/(byte|kb|M|G)/,unit);
+    table.rows[0].cells[1].innerHTML = unit_title;
+    for (var i=1;i<table.rows.length;i++){
+        var obj_name = table.rows[i].cells[0].innerHTML;
+        var size  = table.rows[i].cells[1].innerHTML;
+        if (unit=='byte'){
+            table.rows[i].cells[1].innerHTML = origin_size.get(obj_name);
+        }
+        else if(unit=='kb'){
+            table.rows[i].cells[1].innerHTML = parseInt(origin_size.get(obj_name))/1024;
+        }
+        else if(unit=='M'){
+            table.rows[i].cells[1].innerHTML = parseInt(origin_size.get(obj_name))/(1024*1025);
+        }
+        else if(unit=='G'){
+            table.rows[i].cells[1].innerHTML = parseInt(origin_size.get(obj_name))/(1024*1024*1024);
+        }
+    }
+
+}
+
 function show_obj_list(){
     //使选中container的object显示在table中
     $('#objects').show();
@@ -29,7 +88,7 @@ function show_obj_list(){
             h_m_s = time[2].split('.')[0].split(':');
             new_date = new Date();
             new_date.setFullYear(y_m_d[0],y_m_d[1],y_m_d[2]);
-            new_date.setHours(parseInt(h_m_s[0])+8);
+            new_date.setHours(parseInt(h_m_s[0]));
             new_date.setMinutes(h_m_s[1]);
             new_date.setSeconds(h_m_s[2]);
             year = new_date.getFullYear().toString();
@@ -44,21 +103,23 @@ function show_obj_list(){
             second = new_date.getSeconds().toString();
             if (second.length==1) second='0'+second;
             time_list[i] = year+'年'+month+'月'+date+'日'+hour+'时'+
-                    minute+'分'+second+'秒';
+                minute+'分'+second+'秒';
         }
         for(name in name_list){
             if(name_list[name]=='') break;
             $('#tbody').append(
-                "<tr><td style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
-                "</td>"+
-                "<td>"+size_list[name]+"</td>"+
-                "<td>"+time_list[name]+"</td>"+
-                "<td align=right><input type='checkbox'/></td>"+
-                "</tr>"
-                );
+                    "<tr><td style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
+                    "</td>"+
+                    "<td>"+size_list[name]+"</td>"+
+                    "<td>"+time_list[name]+"</td>"+
+                    "<td align=right><input type='checkbox'/></td>"+
+                    "</tr>"
+                    );
+            origin_size.put(name_list[name],size_list[name]);
         }
         $('#table1').fadeIn();
         $('#table1').tablesorter();
+        change_unit();
     });
 }
 
@@ -77,38 +138,42 @@ $(document).ready(function (){
 
     $("#delObject").click(function (){
         //删除object
-        var table1 = $('#table1').get(0)
+        var table1 = $('#table1').get(0);
         var obj_array = new Array();
-    var objs = '';
-    var del_objs = new Array();
-    var j = 0;
-    for(var i=1;i<table1.rows.length;i++){
-        if ($('#table1').get(0).rows[i].style.display=='none') continue;
-        if ($(':checkbox').get(i-1).checked){
-            objs+=table1.rows[i].cells[0].innerHTML;
-            objs+='^';
-            del_objs[j]=i;
-            j++;
-        }
-    }
-    objs+=$('#select1 option:selected').val();
-    //do=delete_object
-    $.get('/operation?q=do&name='+objs, function(res){
-        if(res=='failure'){
-            alert("删除失败");
-        }
-        else if(res=='success'){
-            for (var i=0;i<del_objs.length;i++){
-                $('#table1').get(0).rows[del_objs[i]].style.display='none';
+        var objs = '';
+        var del_objs = new Array();
+        var j = 0;
+        for(var i=1;i<table1.rows.length;i++){
+            if ($('#table1').get(0).rows[i].style.display=='none') continue;
+            if ($(':checkbox').get(i-1).checked){
+                objs+=table1.rows[i].cells[0].innerHTML;
+                objs+='^';
+                del_objs[j]=i;
+                j++;
             }
-            var text = $('#select1 option:selected').html();
-            var num  = parseInt(text.substring(text.lastIndexOf('(')+1,
-                    text.lastIndexOf(')')));
-            num-=del_objs.length;
-            text = text.replace(/(\(\d+\))/,'('+num+')');
-            $('#select1 option:selected').html(text);
         }
-    });
+        if (del_objs.length>0) {
+            var flag = confirm('是否要删除选中');
+            if (flag==false) return ;
+        }
+        objs+=$('#select1 option:selected').val();
+        //do=delete_object
+        $.get('/operation?q=do&name='+objs, function(res){
+            if(res=='failure'){
+                alert("删除失败");
+            }
+            else if(res=='success'){
+                for (var i=0;i<del_objs.length;i++){
+                    $('#table1').get(0).rows[del_objs[i]].style.display='none';
+                }
+                var text = $('#select1 option:selected').html();
+                var num  = parseInt(text.substring(text.lastIndexOf('(')+1,
+                        text.lastIndexOf(')')));
+                num-=del_objs.length;
+                text = text.replace(/(\(\d+\))/,'('+num+')');
+                $('#select1 option:selected').html(text);
+            }
+        });
     });
 
     $("#delContainer").click(function (){
@@ -173,27 +238,27 @@ $(document).ready(function (){
         }
         show_obj_list()
     }); //cc=create_container
-    });
+    })
 
     $("#select1").change(function (){
         //选中的container变化时显示里面的object列表
         show_obj_list();
-    });
+    })
     $('#addObject').click(function (){
         //上传object
         $.blockUI({fadeIn:1000,
             message:$('#uploadForm'),
-            css: {
-                border: 'none',
-            padding: '15px',
-            backgroundColor: '#000',
-            '-webkit-border-radius': '10px',
-            '-moz-border-radius': '10px',
-            opacity: .5,
-            color: '#8c7a77'
-            }});
+        css: {
+            border: 'none',
+        padding: '15px',
+        backgroundColor: '#000',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .5,
+        color: '#8c7a77'
+        }});
         $('.blockOverlay').attr('title','Click to unblock').click($.unblockUI);
-    });
+    })
     $('#uploadForm').submit(function (){
         //提交按钮被点击时检查上传文件名
         var file_name = $('#file_field').val();
@@ -206,7 +271,7 @@ $(document).ready(function (){
             }
         }
         return true;
-    });
+    })
     $('#download').click(function (){
         //点击下载选中object
         var table1 = $('#table1').get(0);
@@ -216,6 +281,7 @@ $(document).ready(function (){
                 count++;
             }
         });
+        if (count==0) return;
         var flag = true;
         if(count>1) flag=confirm('您选择了多于一个object，他们将被打包成zip文件下载');
         if(flag==false) return;
@@ -230,5 +296,28 @@ $(document).ready(function (){
         objs+=$('#select1 option:selected').val();
         //dl=download
         self.location = '/download?name='+objs
+    })
+    $('#select2').change(function (){
+        change_unit();
+    })
+    $('#all_select').click(function (){
+        var table = $('#table1').get(0);
+        var count = 0;
+        for(var i=1;i<table.rows.length;i++){
+            if($(':checkbox').get(i-1).checked){
+                count++;
+            }
+        }
+        if (count==(table.rows.length-1)){
+            //如果已经全部选中就取消全选
+            for(var i=1;i<table.rows.length;i++){
+                $(':checkbox').get(i-1).checked = false;
+            }
+        }
+        else{
+            for(var i =1;i<table.rows.length;i++){
+                $(':checkbox').get(i-1).checked = true;
+            }
+        }
     });
-});
+})
