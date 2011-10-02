@@ -1,7 +1,10 @@
 body { font-family:Verdana; font-size:14px; margin:0px;background:#2D3134}
 #container {margin:0px auto; width:900px;}
 #header { height:100px; background:#46444B ; margin-bottom:5px;}
-#title{text-align:center;width:100%;}
+#title{text-align:center;width:100%;
+font-style:oblique;
+font-weight:bold;
+}
 #menu ul {float:right;list-style:none;margin:0px;}
 #menu ul li {float:right;margin:10px 10px;display:block;line-height:28px;}
 
