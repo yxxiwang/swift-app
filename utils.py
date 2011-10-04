@@ -6,9 +6,11 @@
 # Filename: workspace/swift_app/utils.py
 # Description:一些辅助类和方法
 #****************************************************
-from swift.common import client
 import os
+import urllib
+import urllib2
 import zipfile
+from swift.common import client
 
 #FILE_PATH = 'temp'
 URL = 'http://127.0.0.1:8080/auth/v1.0'
@@ -112,6 +114,22 @@ def download_multi_files(container_name,objs):
     zip.close()
     return temp_zip_path
 
+def copy_or_move(src, des,flag=False):
+    """复制或移动object,flag为True为move，否则为copy"""
+    url = auth_url+src
+    headers = {'X-Auth-Token':auth_token,'Destination':des.encode('utf-8')}
+    req = urllib2.Request(url.encode('utf-8'), headers=headers)
+    req.get_method = lambda:'COPY'
+    res = urllib2.urlopen(req)
+    src_container = src.split('/')[1]
+    des_container = des.split('/')[1]
+    object = src.split('/')[2]
+    if flag:
+        client.delete_object(auth_url, auth_token,
+                src_container,object)
+    client.put_container(auth_url, auth_token, src_container)
+    client.put_container(auth_url, auth_token, des_container)
+    return res.code
 
 
 if __name__ == '__main__':

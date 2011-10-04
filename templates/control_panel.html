@@ -6,7 +6,6 @@
         <link href="/medias/layout.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="/medias/jquery.js"></script>
         <script type="text/javascript" src="/medias/jquery.blockUI.js"></script>
-        <script type="text/javascript" src='/medias/jquery.tablesorter.min.js'></script>
         <script type="text/javascript" src="/medias/control-panel.js"></script>
     </head>
 
@@ -48,17 +47,19 @@
                             <option value="M">M</option>
                             <option value="G">G</option>
                         </select>
+                        <input type="button" id='moveSelObj'
+                        value='移动所选object' style='float:right'/>
                         <div >
-                            <table id='table1' border=1 width=100% style="table-layout:fixed" class='tablesorter'>
+                            <table id='table1' border=1 width=100% style="table-layout:fixed" >
                                 <thead>
                                 <tr>
-                                    <th scope='cok'>
+                                    <th scope='cok' id='obj_head'>
                                         object
                                     </th>
-                                    <th scope='cok'>
+                                    <th scope='cok' id='size_head'>
                                         大小(byte)
                                     </th>
-                                    <th scope='cok'>
+                                    <th scope='cok' id='time_head'>
                                         上次修改时间
                                     </th>
                                     <th scope='cok' id='all_select'>
@@ -70,10 +71,27 @@
                                     </tbody>
                             </table>
                         </div>
-                        <form action="/upload/" id="uploadForm" enctype="multipart/form-data" method="POST">
+                        <form action="/upload/" id="uploadForm" enctype="multipart/form-data" method="POST" style='display:none'>
                             <input type="file" name="file" id='file_field'/>
-                            <input type="text" name="container_name" id='container_name'/><!--隐藏的text域，用来向服务器提交当前container名字 -->
+                            <input type="text" name="container_name" id='container_name' style='display:none'/><!--隐藏的text域，用来向服务器提交当前container名字 -->
                             <input type="submit" id='upbtn' value="开始上传" />
+                        </form>
+                        <form action='/move/' id='operateObjects' method='post' style='display:none'>
+                            <!--隐藏部分，用来移动或复制object-->
+                            <input type="radio" value='move' checked='checked' name='operate'>移动</input>
+                            <input type="radio" value='copy'  name='operate'>复制</input>  到
+                            <select id="select3" ></select>
+                            <br />
+                            <input type="text" name='src_con' id=
+                            'src_con'
+                            style='display:none'/>
+                            <input type="text" name='des_con' id=
+                            'des_con'
+                            style='display:none'/>
+                            <input type="text" name='obj_list'id=
+                            'obj_list'
+                            style='display:none'/>
+                            <input type="submit" value='确定'/>
                         </form>
                     </div>
                 </div>

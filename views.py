@@ -178,6 +178,23 @@ def upload(request):
     os.remove(temp_file_path)
     return HttpResponseRedirect('/control-panel')
 
+@login_required
+def move(request):
+    """移动或复制object"""
+    src_con = request.POST.get('src_con','')
+    des_con = request.POST.get('des_con','')
+    obj_list = request.POST.get('obj_list','')
+    objs = obj_list.split('^')
+    operate = request.POST.get('operate','')
+    flag = False
+    if operate=='move':
+        flag = True
+    for obj in objs:
+        src = '/'+src_con+'/'+obj
+        des = '/'+des_con+'/'+obj
+        utils.copy_or_move(src, des, flag)
+    return HttpResponseRedirect('/control-panel')
+
 def logout(request):
     """退出登入"""
     auth.logout(request)

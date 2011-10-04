@@ -1,4 +1,5 @@
 var origin_size = new Map();
+var reversed_flag = true;
 
 function Map(){
     //map数据结构
@@ -31,6 +32,24 @@ function Map(){
     this.get = get;
 }
 
+function sortTable(sort){
+    //表格排序
+    var table = $('#table1').get(0);
+    rows = table.rows;
+    var a = new Array();
+    for(var i=1;i<rows.length;i++){
+        a[i-1]=rows[i];
+    }
+    a.sort(sort);
+    for(var i=1;i<rows.length;i++){
+        table.deleteRow(i);
+        i--;
+    }
+    for(var i=0;i<a.length;i++){
+        $('#tbody').get(0).appendChild(a[i]);
+    }
+}
+
 function valid_container(c){
     //验证container名字是否合法
     if (escape(c).length>255 ||c.charAt(0)=="/"){
@@ -39,6 +58,7 @@ function valid_container(c){
 }
 
 function change_unit(){
+    //更改object size的显示单位
     var unit = $('#select2 option:selected').val();
     var table = $('#table1').get(0);
     var unit_title = table.rows[0].cells[1].innerHTML;
@@ -88,7 +108,7 @@ function show_obj_list(){
             h_m_s = time[2].split('.')[0].split(':');
             new_date = new Date();
             new_date.setFullYear(y_m_d[0],y_m_d[1],y_m_d[2]);
-            new_date.setHours(parseInt(h_m_s[0]));
+            new_date.setHours(parseInt(h_m_s[0])+8);
             new_date.setMinutes(h_m_s[1]);
             new_date.setSeconds(h_m_s[2]);
             year = new_date.getFullYear().toString();
@@ -118,7 +138,6 @@ function show_obj_list(){
             origin_size.put(name_list[name],size_list[name]);
         }
         $('#table1').fadeIn();
-        $('#table1').tablesorter();
         change_unit();
     });
 }
@@ -128,9 +147,6 @@ $(document).ready(function (){
     var select1 = $('#select1').get(0);
     if (length>=19) select1.size =19;
     else select1.size = length;
-    $('#objects').hide();
-    $('#uploadForm').hide();
-    $('#container_name').hide();
     if ($('#select1').get(0).selectedIndex!=-1){
         var container_name = $('#select1 option:selected').get(0).value;
         show_obj_list();
@@ -244,6 +260,40 @@ $(document).ready(function (){
         //选中的container变化时显示里面的object列表
         show_obj_list();
     })
+
+    $('#moveSelObj').click(function(){
+        //移动或复制object
+        if($('#table1').get(0).style.display=='none') return;
+        var count=0;
+        $(':checkbox:visible').each(function(){
+            if($(this).is(':checked')) count++;
+        })
+        if (count==0) {alert('请至少选中一个object');return;}
+        var select1 = $('#select1').get(0);
+        var select3 = $('#select3').get(0);
+        for (var i=0;i<select3.options.length;i++){
+            $("#select3 option[index="+i+"]").remove();
+            i--;
+        }
+        for (var i=0;i<select1.options.length;i++){
+            if(select1.selectedIndex==i) continue;
+            var value = select1.options[i].value;
+            select3.options.add(new Option(value));
+        }
+        $.blockUI({fadeIn:1000,
+            message:$('#operateObjects'),
+        css: {
+            border: 'none',
+        padding: '15px',
+        backgroundColor: '#000',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .5,
+        color: '#8c7a77'
+        }});
+        $('.blockOverlay').attr('title','click to unblock').click($.unblockUI);
+    });
+
     $('#addObject').click(function (){
         //上传object
         $.blockUI({fadeIn:1000,
@@ -259,6 +309,7 @@ $(document).ready(function (){
         }});
         $('.blockOverlay').attr('title','Click to unblock').click($.unblockUI);
     })
+
     $('#uploadForm').submit(function (){
         //提交按钮被点击时检查上传文件名
         var file_name = $('#file_field').val();
@@ -272,6 +323,24 @@ $(document).ready(function (){
         }
         return true;
     })
+
+    $('#operateObjects').submit(function(){
+        //提交移动或复制object的表格
+        $('#src_con').val($('#select1 option:selected').val());
+        $('#des_con').val($('#select3 option:selected').val());
+        var table = $('#table1').get(0);
+        var objects = '';
+        for(var i=1;i<table.rows.length;i++){
+            if (table.rows[i].style.display=='none') continue;
+            if ($(':checkbox').get(i-1).checked){
+                objects+=table.rows[i].cells[0].innerHTML;
+                objects+='^';
+            }
+        }
+        objects = objects.substring(0,objects.length-1);
+        $('#obj_list').val(objects);
+    });
+
     $('#download').click(function (){
         //点击下载选中object
         var table1 = $('#table1').get(0);
@@ -297,9 +366,11 @@ $(document).ready(function (){
         //dl=download
         self.location = '/download?name='+objs
     })
+
     $('#select2').change(function (){
         change_unit();
     })
+
     $('#all_select').click(function (){
         var table = $('#table1').get(0);
         var count = 0;
@@ -318,6 +389,82 @@ $(document).ready(function (){
             for(var i =1;i<table.rows.length;i++){
                 $(':checkbox').get(i-1).checked = true;
             }
+        }
+    });
+
+
+    $('#obj_head').click(function (){
+        function x_sort(x,y){
+            x = x.cells[0].innerHTML;
+            y = y.cells[0].innerHTML;
+            if (x>y) return 1;
+            else if (y==x) return 0;
+            else if (x<y) return -1;
+        }
+        function y_sort(x,y){
+            x = x.cells[0].innerHTML;
+            y = y.cells[0].innerHTML;
+            if (y>x) return 1;
+            else if (y==x) return 0;
+            else if (y<x) return -1;
+        }
+        if (reversed_flag) {
+            sortTable(x_sort);
+            reversed_flag = false;
+        }
+        else {
+            sortTable(y_sort);
+            reversed_flag = true;
+        }
+    });
+
+    $('#size_head').click(function (){
+        function x_sort(x,y){
+            x = parseFloat(x.cells[1].innerHTML);
+            y = parseFloat(y.cells[1].innerHTML);
+            if (x>y) return 1;
+            else if (y==x) return 0;
+            else if (x<y) return -1;
+        }
+        function y_sort(x,y){
+            x = parseFloat(x.cells[1].innerHTML);
+            y = parseFloat(y.cells[1].innerHTML);
+            if (y>x) return 1;
+            else if (y==x) return 0;
+            else if (y<x) return -1;
+        }
+        if (reversed_flag) {
+            sortTable(x_sort);
+            reversed_flag = false;
+        }
+        else {
+            sortTable(y_sort);
+            reversed_flag = true;
+        }
+    });
+
+    $('#time_head').click(function (){
+        function x_sort(x,y){
+            x = x.cells[2].innerHTML;
+            y = y.cells[2].innerHTML;
+            if (x>y) return 1;
+            else if (y==x) return 0;
+            else if (x<y) return -1;
+        }
+        function y_sort(x,y){
+            x = x.cells[2].innerHTML;
+            y = y.cells[2].innerHTML;
+            if (y>x) return 1;
+            else if (y==x) return 0;
+            else if (y<x) return -1;
+        }
+        if (reversed_flag) {
+            sortTable(x_sort);
+            reversed_flag = false;
+        }
+        else {
+            sortTable(y_sort);
+            reversed_flag = true;
         }
     });
 })

@@ -31,6 +31,7 @@ urlpatterns = patterns('swift_app.views',
     (r'^operation/$','operation'),
     (r'^upload/$','upload'),
     (r'download/$','download'),
+    (r'^move/$','move'),
 )
 urlpatterns+=patterns('',
         (r'^medias/(?P<path>.*)$','django.views.static.serve',{'document_root':os.path.join(os.path.dirname(__file__),'medias')}),)
