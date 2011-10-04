@@ -72,9 +72,12 @@ def already_logged(request):
 @login_required
 def control_panel(request):
     """控制面板"""
+    user = request.user.username.split(':')[1]
+    account = request.user.username.split(':')[0]
     container_list = utils.get_container_list()
     return render_to_response('control_panel.html',
-            {'container_list':container_list})
+            {'container_list':container_list,
+                'user':user,'account':account})
 
 @login_required
 def operation(request):
@@ -107,7 +110,6 @@ def operation(request):
         objs = objs[:-1]
         for obj in objs:
             try:
-                print container_name,obj
                 client.delete_object(utils.auth_url,utils.auth_token,
                         container_name, obj)
             except client.ClientException:
@@ -121,6 +123,29 @@ def operation(request):
         if len(objs)==1:
             response = utils.download_single_file(container_name, objs[0])
             return response
+    elif q=='ic':#查询container信息
+        try:
+            result = client.get_container(utils.auth_url,utils.auth_token,
+                    name)[0].get('x-container-read','')
+            if result:
+                result = utils.auth_url+'/'
+            return HttpResponse(result)
+        except client.ClientException:
+            return HttpResponse('failure')
+    elif q=='sc':#共享container
+        try:
+            client.post_container(utils.auth_url,utils.auth_token,
+                    name,headers={'X-Container-Read':'.r:*'})
+            return HttpResponse(utils.auth_url+'/')
+        except client.ClientException:
+            return HttpResponse('failure')
+    elif q=='pc':#使container变为私有
+        try:
+            client.post_container(utils.auth_url,utils.auth_token,
+                    name,headers={'X-Container-Read':''})
+            return HttpResponse('success')
+        except client.ClientException:
+            return HttpResponse('failure')
     return HttpResponse('success')
 
 @login_required
@@ -132,7 +157,6 @@ def download(request):
     objs = objs[:-1]
     if len(objs)==1:
     #只有一个文件要下载的情况
-        print objs[0]
         result = utils.download_single_file(container_name, objs[0])
         if result=='failure':
             return HttpResponse(result)
@@ -144,7 +168,6 @@ def download(request):
     else:
     #有多个文件要下载的情况
         result = utils.download_multi_files(container_name, objs)
-        print result
         if result == 'failure':
             return HttpResponse(result)
         wrapper = FileWrapper(open(result,'rb'))

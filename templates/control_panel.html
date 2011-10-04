@@ -13,6 +13,8 @@
         <div id="container">
             <div id="header">
                 <div id="title"><h2>swift管理系统</h2></div>
+                <div style='float:left'>{{user}},welcome～.You're using account
+                    {{account}}</div>
                 　<div id="menu">
                     　　　<ul>
                         　　　　<li><a href="/logout">退出</a></li>
@@ -24,10 +26,13 @@
             </div>
             <div id="mainContent">
                 <div id="sidebar">
-                    <input type="button" id="delContainer"
-                    value="删除选中container"/>
-                    <input type="button" id="addContainer"
-                    value="添加一个container"/>
+                    <select id="select0" name="">
+                        <option value='delContainer'>删除选中container</option>
+                        <option value="addContainer">添加一个container</option>
+                        <option value="makePublic">共享选中container</option>
+                    </select>
+                    <input type="button" value='执行' id='commit'
+                    style='float:right;margin-right:25px'/>
                     <select id="select1" name="" >
                         {% for container in container_list%}
                         <option value={{container.get_name}}>{{container.get_display_text}}</option>
@@ -93,6 +98,21 @@
                             style='display:none'/>
                             <input type="submit" value='确定'/>
                         </form>
+                        <div id='publicContainer' style='display:none'>
+                            <!--隐藏的部分，共享container-->
+                            当前状态:
+                            <label id="status" for=""></label>
+                            <br />
+                            <Button id='pubBtn'>共享选中Container</Button>
+                            <Button id='priBtn'>使选中Container变为私有</Button>
+                            <br />
+                            <div id="shareLink">
+                                <label
+                                    for="link">您可以通过下方链接+文件名的形式直接下载文件，不经授权也可使用此链接</label>
+                                <br />
+                                <input type="text" id='link' readonly='readonly' />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

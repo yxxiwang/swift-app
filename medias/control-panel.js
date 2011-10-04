@@ -1,5 +1,6 @@
 var origin_size = new Map();
 var reversed_flag = true;
+var public_url = '';
 
 function Map(){
     //map数据结构
@@ -30,6 +31,22 @@ function Map(){
     this.attr = new Array();
     this.put = put;
     this.get = get;
+}
+
+function show_hide_part(msg){
+    //显示被隐藏的部分
+        $.blockUI({fadeIn:500,
+            message:$(msg),
+        css: {
+            border: 'none',
+        padding: '15px',
+        backgroundColor: '#000',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .5,
+        color: '#8c7a77'
+        }});
+        $('.blockOverlay').attr('title','Click to unblock').click($.unblockUI);
 }
 
 function sortTable(sort){
@@ -142,6 +159,105 @@ function show_obj_list(){
     });
 }
 
+function delContainer(){
+    //删除选中的container
+        var opt = $('#select1').get(0).options;
+        var table = $('#table1').get(0);
+        var count=0;
+        if (opt.selectedIndex==-1){
+            alert("请先选中一个container");
+            return;
+        }
+        for (var i=1;i<table.rows.length;i++){
+            if (table.rows[i].style.display=='none') continue;
+            count++;
+        }
+        if (count>0){
+            alert("无法删除非空的container");
+            return;
+        }
+        var flag = window.confirm("确定要删除选中container？（不可撤销操作）")
+        if (!flag){
+            return;
+        }
+    //dc=delete_container
+    $.get('/operation?q=dc&name='+opt[opt.selectedIndex].value ,
+        function (res){
+            if(res=='failure') {
+                alert('删除失败');
+                return;
+            }
+            $("#select1 option:selected").remove();
+            $('#select1').get(0).size=$('#select1').get(0).options.length;
+            if ($('#select1').get(0).options.selectedIndex==-1){
+                $('#objects').hide();
+            }
+        });
+
+}
+
+function addContainer(){
+    //添加一个container
+        var text = window.prompt("输入container名字");
+        if(text==null || text.match(/^\s*$/)){
+            return ;
+        }
+        else if(valid_container(text)==false){
+            alert("container编码后长度要小于256且不能以/开头");
+            return;
+        }
+    var opts = $('#select1').get(0).options;
+    for(i=0;i<opts.length;i++){
+        if(opts[i].value==text){
+            alert("该container已存在");
+            return ;
+        }
+    }
+    opt = new Option(text+'('+0+')');
+    opt.value= text;
+    $.get('/operation?q=cc&name='+text,function (res){
+        if (res=='failure'){
+            alert('创建container失败');
+            return ;
+        }
+        opts.add(opt);
+        if (opts.length>=19){
+            $('#select1').get(0).size=19;
+        }else{
+            $('#select1').get(0).size=opts.length;
+        }
+        show_obj_list()
+    }); //cc=create_container
+}
+
+function makePublic(){
+    //显示共享container的窗口
+        if($('#select1').get(0).selectedIndex==-1) return;
+        var name = $('#select1 option:selected').val();
+        $.get('/operation?q=ic&name='+name,function(res){
+                //ic=info_container
+                if (res=='failure'){
+                    alert('出错啦T T');
+                    return;
+                }
+                else if(res=='') {
+                    $('#status').get(0).innerHTML='private';
+                    $('#priBtn').hide();
+                    $('#pubBtn').show();
+                    $('#shareLink').hide();
+                }
+                else {
+                    $('#status').get(0).innerHTML='public';
+                    $('#pubBtn').hide();
+                    $('#priBtn').show();
+                    public_url = res;
+                    $('#link').get(0).value=public_url+name+'/';
+                    $('#shareLink').show();
+                }
+                show_hide_part('#publicContainer');
+        })
+}
+
 $(document).ready(function (){
     var length = $('#select1>option').length;
     var select1 = $('#select1').get(0);
@@ -192,74 +308,11 @@ $(document).ready(function (){
         });
     });
 
-    $("#delContainer").click(function (){
-        //删除列表中选定的container
-        var opt = $('#select1').get(0).options;
-        if (opt.selectedIndex==-1){
-            alert("请先选中一个container");
-            return;
-        }
-        if ($('#table1').get(0).rows.length>1){
-            alert("无法删除非空的container");
-            return;
-        }
-        var flag = window.confirm("确定要删除选中container？（不可撤销操作）")
-        if (!flag){
-            return;
-        }
-    //dc=delete_container
-    $.get('/operation?q=dc&name='+opt[opt.selectedIndex].value ,
-        function (res){
-            if(res=='failure') {
-                alert('删除失败');
-                return;
-            }
-            $("#select1 option:selected").remove();
-            $('#select1').get(0).size=$('#select1').get(0).options.length;
-            if ($('#select1').get(0).options.selectedIndex==-1){
-                $('#objects').hide();
-            }
-        });
-    });
-
-    $("#addContainer").click(function (){
-        //添加一个container
-        var text = window.prompt("输入container名字");
-        if(text==null || text.match(/^\s*$/)){
-            return ;
-        }
-        else if(valid_container(text)==false){
-            alert("container编码后长度要小于256且不能以/开头");
-            return;
-        }
-    var opts = $('#select1').get(0).options;
-    for(i=0;i<opts.length;i++){
-        if(opts[i].value==text){
-            alert("该container已存在");
-            return ;
-        }
-    }
-    opt = new Option(text+'('+0+')');
-    opt.value= text;
-    $.get('/operation?q=cc&name='+text,function (res){
-        if (res=='failure'){
-            alert('创建container失败');
-            return ;
-        }
-        opts.add(opt);
-        if (opts.length>=19){
-            $('#select1').get(0).size=19;
-        }else{
-            $('#select1').get(0).size=opts.length;
-        }
-        show_obj_list()
-    }); //cc=create_container
-    })
 
     $("#select1").change(function (){
         //选中的container变化时显示里面的object列表
         show_obj_list();
-    })
+    });
 
     $('#moveSelObj').click(function(){
         //移动或复制object
@@ -269,6 +322,10 @@ $(document).ready(function (){
             if($(this).is(':checked')) count++;
         })
         if (count==0) {alert('请至少选中一个object');return;}
+        if ($('#select1').get(0).options.length==1){
+            alert('只有一个container');
+            return ;
+        }
         var select1 = $('#select1').get(0);
         var select3 = $('#select3').get(0);
         for (var i=0;i<select3.options.length;i++){
@@ -280,35 +337,14 @@ $(document).ready(function (){
             var value = select1.options[i].value;
             select3.options.add(new Option(value));
         }
-        $.blockUI({fadeIn:1000,
-            message:$('#operateObjects'),
-        css: {
-            border: 'none',
-        padding: '15px',
-        backgroundColor: '#000',
-        '-webkit-border-radius': '10px',
-        '-moz-border-radius': '10px',
-        opacity: .5,
-        color: '#8c7a77'
-        }});
-        $('.blockOverlay').attr('title','click to unblock').click($.unblockUI);
+        show_hide_part('#operateObjects');
     });
 
     $('#addObject').click(function (){
         //上传object
-        $.blockUI({fadeIn:1000,
-            message:$('#uploadForm'),
-        css: {
-            border: 'none',
-        padding: '15px',
-        backgroundColor: '#000',
-        '-webkit-border-radius': '10px',
-        '-moz-border-radius': '10px',
-        opacity: .5,
-        color: '#8c7a77'
-        }});
-        $('.blockOverlay').attr('title','Click to unblock').click($.unblockUI);
-    })
+        if($('#select1').get(0).options.length==0) return;
+        show_hide_part('#uploadForm');
+    });
 
     $('#uploadForm').submit(function (){
         //提交按钮被点击时检查上传文件名
@@ -322,7 +358,7 @@ $(document).ready(function (){
             }
         }
         return true;
-    })
+    });
 
     $('#operateObjects').submit(function(){
         //提交移动或复制object的表格
@@ -365,13 +401,15 @@ $(document).ready(function (){
         objs+=$('#select1 option:selected').val();
         //dl=download
         self.location = '/download?name='+objs
-    })
+    });
 
     $('#select2').change(function (){
+        //改变状态
         change_unit();
-    })
+    });
 
     $('#all_select').click(function (){
+        //全选
         var table = $('#table1').get(0);
         var count = 0;
         for(var i=1;i<table.rows.length;i++){
@@ -394,6 +432,7 @@ $(document).ready(function (){
 
 
     $('#obj_head').click(function (){
+        //根据object name排序
         function x_sort(x,y){
             x = x.cells[0].innerHTML;
             y = y.cells[0].innerHTML;
@@ -419,6 +458,7 @@ $(document).ready(function (){
     });
 
     $('#size_head').click(function (){
+        //更具size排序
         function x_sort(x,y){
             x = parseFloat(x.cells[1].innerHTML);
             y = parseFloat(y.cells[1].innerHTML);
@@ -444,6 +484,7 @@ $(document).ready(function (){
     });
 
     $('#time_head').click(function (){
+        //更具修改时间排序
         function x_sort(x,y){
             x = x.cells[2].innerHTML;
             y = y.cells[2].innerHTML;
@@ -466,5 +507,45 @@ $(document).ready(function (){
             sortTable(y_sort);
             reversed_flag = true;
         }
+    });
+
+    $('#pubBtn').click(function(){
+            //共享选中Container
+        var name = $('#select1 option:selected').val();
+        $.get('/operation?q=sc&name='+name,function(res){
+                //sc=share_container
+                if (res=='failure'){
+                    alert('出错啦T T');
+                    return;
+                }
+                else {
+                    public_url = res;
+                    $('#link').get(0).value=public_url+name+'/';
+                    $('#shareLink').show();
+                }
+        });
+    });
+
+    $('#priBtn').click(function(){
+            //使container变为私有
+            var name = $('#select1 option:selected').val();
+            $.get('/operation?q=pc&name='+name,function(res){
+            //pc=private_container
+            if(res=='failure'){
+                alert('出错啦T T');
+                return ;
+            }
+            else{
+                $('#shareLink').hide();
+            }
+            });
+    });
+
+    $('#commit').click(function(){
+        //点击执行按钮
+        value = $('#select0').val();
+        if (value=='delContainer') delContainer();
+        else if (value=='addContainer') addContainer();
+        else if (value=='makePublic') makePublic();
     });
 })
