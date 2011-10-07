@@ -145,7 +145,7 @@ function show_obj_list(){
         for(name in name_list){
             if(name_list[name]=='') break;
             $('#tbody').append(
-                    "<tr><td style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
+                    "<tr ><td style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
                     "</td>"+
                     "<td>"+size_list[name]+"</td>"+
                     "<td>"+time_list[name]+"</td>"+

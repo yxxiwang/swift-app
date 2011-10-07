@@ -179,7 +179,7 @@ def download(request):
 @login_required
 def upload(request):
     """上传文件"""
-    illegal_char = ['+','^','#','&']
+    illegal_char = ['+','^','#','&',' ']
     file_obj = request.FILES.get('file',None)
     container_name = request.POST.get('container_name','')
     name = ''

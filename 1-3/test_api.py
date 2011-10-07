@@ -201,15 +201,14 @@ class Swift_Api():
 
 if __name__ == '__main__':
     api = Swift_Api('test:tester','testing','http://127.0.0.1:8080/auth/v1.0')
-    print api.get_auth()
-    #print api.get_container_list('format')
+    print api.get_container_list()
     #print api.get_object_list('NIhao')
    # print api.create_container('faf')
-    #print api.delete_container('<div style="text-align: left')
+    #print api.delete_container('ty2')
     #print api.head_container('faf')
-    #print api.get_object('faf','hosts')[0]
+    #print api.get_object('fafa','s3.txt')[0]
     #print api.update_object('faf','闲敲云子.mp3')
     #print api.delete_object('faf','hosts')
    #print api.copy_object('/faf/git使用.txt','/ff/git使用.txt')
-    print api.make_public('faf')
+    #print api.make_public('faf')
    # print api.make_private('OK')

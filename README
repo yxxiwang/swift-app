@@ -1,1 +1,5 @@
 swift的web管理界面（django）
+
+1-3文件夹内为项目要求1-3的结果
+test_api.py是为了熟悉swift的api，用python对其做的简易封装
+s3_test.py是测试swift对s3api的兼容性所写的测试代码
