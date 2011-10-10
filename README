@@ -3,3 +3,40 @@ swift的web管理界面（django）
 1-3文件夹内为项目要求1-3的结果
 test_api.py是为了熟悉swift的api，用python对其做的简易封装
 s3_test.py是测试swift对s3api的兼容性所写的测试代码
+
+swift用户认证的时候有个authurl，根据安装配置及使用swift版本的情况不同，这个地址也可能不一样。
+我的是http://127.0.0.1:8080/auth/v1.0
+根据情况修改utls.py中的URL变量值，否则无法登录成功。
+
+首先开启django的测试服务器，在工程文件夹内执行python manager.py runserver
+浏览器访问http://127.0.0.1:8000 或者http://127.0.0.1:8000/login
+我这的环境安装完成后内置一个测试帐号,登入用户名：test:tester，密码：testing
+，没意外的话，用这个可以直接登入到控制面板界面。如果使用自己建的account就要先注册（先在命令行下生成swift的帐号，然后在web界面上注册）。
+swauth添加帐号的方法：swauth-add-user -K swauthkey account user password
+swauthkey是配置swauth的时候自定义的密码，之后在web页面上注册的时候使用的用户名就是account:user,密码是password。注册完，可登录。
+
+开发环境：
+swift 1.4.3，django：1.2.5，linuxmint11, vim7.3
+
+配置方面的说明：
+1.开启swauth支持
+1.4版本的swift并不集成swauth，内置tempauth做开发用，如果要添加新的account就要安装swauth。
+下载:github.com/gholt/swauth
+安装完成后要在swift中将tempauth支持改成swauth
+打开/etc/swift/proxy-server.conf
+原来有一节是
+[pipeline:main]
+pipeline = healthcheck cache tempauth proxy-server
+将下面的tempauth改成swauth
+再添加一节
+[filter:swauth]
+use = egg:swauth#swauth
+super_admin_key = swauthkey
+swauthkey是使用swauth命令时必须要的密码，可自定义
+
+2.开启s3兼容性支持
+刚刚pipline=。。。。那一行里加入swift3,就是变成
+pipeline = healthcheck cache swift3 swauth proxy-server
+再添加一节
+[filter:swift3]
+use = egg:swift#swift3

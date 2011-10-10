@@ -175,6 +175,31 @@ class Swift_Api():
         res = urllib2.urlopen(req)
         return res.code
 
+    def head_object(self, container, object):
+        """获取一个object的头信息"""
+        if not self.is_auth:
+            self.get_auth()
+        x_storage_url = self.x_storage_url+'/'+container+'/'+object
+        headers = {'X-Auth-Token':self.x_auth_token}
+        req = urllib2.Request(x_storage_url, headers=headers)
+        req.get_method = lambda: 'HEAD'
+        res = urllib2.urlopen(req)
+        return res.info()
+
+    def update_object_meta(self, container, object, value):
+        """更新object的元数据信息,value是字典类型"""
+        if not self.is_auth:
+            self.get_auth()
+        x_storage_url = self.x_storage_url+'/'+container+'/'+object
+        headers = {'X-Auth-Token':self.x_auth_token}
+        for k, v in value.items():
+            headers['X-Object-Meta-%s'%k] = v
+        req = urllib2.Request(x_storage_url, headers=headers)
+        req.get_method = lambda:'POST'
+        res = urllib2.urlopen(req)
+        return res.info()
+
+
     def make_public(self,container):
         """将一个container为public"""
         if not self.is_auth:
@@ -201,7 +226,7 @@ class Swift_Api():
 
 if __name__ == '__main__':
     api = Swift_Api('test:tester','testing','http://127.0.0.1:8080/auth/v1.0')
-    print api.get_container_list()
+    #print api.get_container_list()
     #print api.get_object_list('NIhao')
    # print api.create_container('faf')
     #print api.delete_container('ty2')
@@ -210,5 +235,7 @@ if __name__ == '__main__':
     #print api.update_object('faf','闲敲云子.mp3')
     #print api.delete_object('faf','hosts')
    #print api.copy_object('/faf/git使用.txt','/ff/git使用.txt')
+    print api.head_object('fafa','hosts')
+    #print api.update_object_meta('fafa','hosts',{'xyj':'my1325'})
     #print api.make_public('faf')
    # print api.make_private('OK')

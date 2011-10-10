@@ -2,7 +2,7 @@
 #coding=utf-8
 #****************************************************
 # Author: 徐叶佳 - xyj.asmy@gmail.com
-# Last modified: 2011-09-25 17:12
+# Last modified: 2011-10-08 17:41
 # Filename: workspace/swift_app/views.py
 # Description: 视图函数
 #****************************************************
@@ -175,6 +175,19 @@ def download(request):
         response['Content-Disposition'] = 'attachment; filename=all_in_one.zip'
         return response
 
+@login_required
+def preview(request):
+    """预览object"""
+    items = request.GET.get('name','').split('^')
+    container = items[-1:][0]
+    objs = items[:-1]
+    if len(objs)==1:
+        result = utils.download_single_file(container,objs[0])
+        if result == 'failure':
+            return HttpResponse(result)
+        if objs[0].endswith('txt'):
+            return HttpResponse(open(result).read(1000))
+        return HttpResponse(objs[0])
 
 @login_required
 def upload(request):
@@ -217,6 +230,7 @@ def move(request):
         des = '/'+des_con+'/'+obj
         utils.copy_or_move(src, des, flag)
     return HttpResponseRedirect('/control-panel')
+
 
 def logout(request):
     """退出登入"""

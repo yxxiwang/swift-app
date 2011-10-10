@@ -13,7 +13,7 @@ $(document).ready(function (){
             alert('两次输入的密码不一致');
             return false;
         }
-        if (!email.match(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/)){
+        if (!email.match(/^([a-zA-Z0-9_\.-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/)){
             alert('邮箱不符合格式');
             return false;
         }

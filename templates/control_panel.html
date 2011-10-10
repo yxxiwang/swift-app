@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title></title>
+        <title>swift</title>
         <link href="/medias/layout.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="/medias/jquery.js"></script>
         <script type="text/javascript" src="/medias/jquery.blockUI.js"></script>
@@ -12,9 +12,9 @@
     <body>
         <div id="container">
             <div id="header">
-                <div id="title"><h2>swift管理系统</h2></div>
-                <div style='float:left'><em>{{user}}</em>,welcome～.You're using account
-                            <em>{{account}}</em></div>
+                <div id="title"><h2 style="color:#EC894C">swift管理系统</h2></div>
+                <div style='float:left'><em style="color:#E3E0ED">{{user}}</em>,welcome～.You're using account
+                            <em style="color:#E3E0ED">{{account}}</em></div>
                 　<div id="menu">
                     　　　<ul>
                         　　　　<li><a href="/logout">退出</a></li>
@@ -32,7 +32,7 @@
                         <option value="makePublic">共享选中container</option>
                     </select>
                     <input type="button" value='执行' id='commit'
-                    style='float:right;margin-right:25px'/>
+                    style='float:right;margin-right:25px;width:80px'/>
                     <select id="select1" name="" >
                         {% for container in container_list%}
                         <option value={{container.get_name}}>{{container.get_display_text}}</option>
@@ -42,7 +42,7 @@
                 <div id="content" >
                     <div id="objects"  >
                         <input type="button" id='delObject' value="删除选中object"/>
-                        <input type="button" id='addObject' value="上传object"/>
+                        <input type="button" id='addObject' value="上传object" style='margin:0 10px'/>
                         <input type="button" id="download"
                         value="下载选中object"/>
                         <label for="select2">大小显示单位：</label>
@@ -55,20 +55,20 @@
                         <input type="button" id='moveSelObj'
                         value='移动所选object' style='float:right'/>
                         <div >
-                            <table id='table1' border=1 width=100% style="table-layout:fixed" >
+                            <table id='table1' border=1 width=100% style="word-break:break-all;word-wrap:break-all;" >
                                 <thead>
                                 <tr>
                                     <th scope='cok' id='obj_head'>
-                                        object
+                                        object(正序/逆序)
                                     </th>
                                     <th scope='cok' id='size_head'>
-                                        大小(byte)
+                                        大小(byte)(正序/逆序)
                                     </th>
                                     <th scope='cok' id='time_head'>
-                                        上次修改时间
+                                        上次修改时间(正序/逆序)
                                     </th>
                                     <th scope='cok' id='all_select'>
-                                        选中
+                                        选中(全选/取消)
                                     </th>
                                 </tr>
                             </thead>
@@ -116,7 +116,7 @@
                     </div>
                 </div>
             </div>
-            <div id="footer">This is the footer</div>
+            <div id="footer">swift</div>
         </div>
     </body>
 </html>

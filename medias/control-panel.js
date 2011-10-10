@@ -38,7 +38,7 @@ function show_hide_part(msg){
         $.blockUI({fadeIn:500,
             message:$(msg),
         css: {
-            border: 'none',
+        border: 'none',
         padding: '15px',
         backgroundColor: '#000',
         '-webkit-border-radius': '10px',
@@ -145,7 +145,7 @@ function show_obj_list(){
         for(name in name_list){
             if(name_list[name]=='') break;
             $('#tbody').append(
-                    "<tr ><td style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
+                    "<tr ><td class='obj_cls' style='overflow:auto' value="+name_list[name]+">"+name_list[name]+
                     "</td>"+
                     "<td>"+size_list[name]+"</td>"+
                     "<td>"+time_list[name]+"</td>"+
@@ -156,6 +156,25 @@ function show_obj_list(){
         }
         $('#table1').fadeIn();
         change_unit();
+        $('.obj_cls').click(function(){
+            //预览选中object
+            var objs = $(this).text();
+            objs+='^'+$('#select1 option:selected').val();
+            $.get('/preview?name='+objs,function(res){
+                if (res=='failure'){
+                    $.growlUI('获取文件失败');
+                    return ;
+                }
+                else{
+                    var ext = objs.split('^')[0].split('.')[1];
+                    if (ext=='txt')
+                        show_hide_part('<div width=400px>'+res+'</div>');
+                    else if (ext=='png' ||ext=='jpg' ||ext=='gif'||ext=='bmp')
+                        show_hide_part('<img src='+'/download/'+res+' width=400px >');
+                    else show_hide_part('<div>'+objs.split('^')[0]+'</div>')
+                }
+            });
+        });
     });
 }
 
@@ -165,7 +184,7 @@ function delContainer(){
         var table = $('#table1').get(0);
         var count=0;
         if (opt.selectedIndex==-1){
-            alert("请先选中一个container");
+            $.growlUI('请先选中一个container');
             return;
         }
         for (var i=1;i<table.rows.length;i++){
@@ -173,7 +192,7 @@ function delContainer(){
             count++;
         }
         if (count>0){
-            alert("无法删除非空的container");
+            $.growlUI('无法删除非空container');
             return;
         }
         var flag = window.confirm("确定要删除选中container？（不可撤销操作）")
@@ -184,7 +203,7 @@ function delContainer(){
     $.get('/operation?q=dc&name='+opt[opt.selectedIndex].value ,
         function (res){
             if(res=='failure') {
-                alert('删除失败');
+                $.growlUI('删除失败');
                 return;
             }
             $("#select1 option:selected").remove();
@@ -203,13 +222,13 @@ function addContainer(){
             return ;
         }
         else if(valid_container(text)==false){
-            alert("container编码后长度要小于256且不能以/开头");
+            $.growlUI("container编码后长度要小于256且不能以/开头");
             return;
         }
     var opts = $('#select1').get(0).options;
     for(i=0;i<opts.length;i++){
         if(opts[i].value==text){
-            alert("该container已存在");
+            $.growlUI("该container已存在");
             return ;
         }
     }
@@ -217,7 +236,7 @@ function addContainer(){
     opt.value= text;
     $.get('/operation?q=cc&name='+text,function (res){
         if (res=='failure'){
-            alert('创建container失败');
+            $.growlUI('创建container失败');
             return ;
         }
         opts.add(opt);
@@ -237,7 +256,7 @@ function makePublic(){
         $.get('/operation?q=ic&name='+name,function(res){
                 //ic=info_container
                 if (res=='failure'){
-                    alert('出错啦T T');
+                    $.growlUI('出错啦T T');
                     return;
                 }
                 else if(res=='') {
@@ -268,6 +287,8 @@ $(document).ready(function (){
         show_obj_list();
     }
 
+    $.growlUI('点击表头可排序，点击object名字，txt和图片可预览');
+
     $("#delObject").click(function (){
         //删除object
         var table1 = $('#table1').get(0);
@@ -288,11 +309,14 @@ $(document).ready(function (){
             var flag = confirm('是否要删除选中');
             if (flag==false) return ;
         }
+        else{
+            $.growlUI('请先选中一个object');
+        }
         objs+=$('#select1 option:selected').val();
         //do=delete_object
         $.get('/operation?q=do&name='+objs, function(res){
             if(res=='failure'){
-                alert("删除失败");
+                $.growlUI("删除失败");
             }
             else if(res=='success'){
                 for (var i=0;i<del_objs.length;i++){
@@ -321,9 +345,9 @@ $(document).ready(function (){
         $(':checkbox:visible').each(function(){
             if($(this).is(':checked')) count++;
         })
-        if (count==0) {alert('请至少选中一个object');return;}
+        if (count==0) {$.growlUI('请至少选中一个object');return;}
         if ($('#select1').get(0).options.length==1){
-            alert('只有一个container');
+            $.growlUI('只有一个container');
             return ;
         }
         var select1 = $('#select1').get(0);
@@ -342,7 +366,10 @@ $(document).ready(function (){
 
     $('#addObject').click(function (){
         //上传object
-        if($('#select1').get(0).options.length==0) return;
+        if($('#select1').get(0).options.length==0) {
+            $.growlUI('请先创建一个container');
+            return;
+        }
         show_hide_part('#uploadForm');
     });
 
@@ -386,7 +413,10 @@ $(document).ready(function (){
                 count++;
             }
         });
-        if (count==0) return;
+        if (count==0) {
+            $.growlUI('请先选中一个object');
+            return;
+        }
         var flag = true;
         if(count>1) flag=confirm('您选择了多于一个object，他们将被打包成zip文件下载');
         if(flag==false) return;
@@ -402,6 +432,7 @@ $(document).ready(function (){
         //dl=download
         self.location = '/download?name='+objs
     });
+
 
     $('#select2').change(function (){
         //改变状态
@@ -515,7 +546,7 @@ $(document).ready(function (){
         $.get('/operation?q=sc&name='+name,function(res){
                 //sc=share_container
                 if (res=='failure'){
-                    alert('出错啦T T');
+                    $.growlUI('出错啦T T');
                     return;
                 }
                 else {
@@ -532,7 +563,7 @@ $(document).ready(function (){
             $.get('/operation?q=pc&name='+name,function(res){
             //pc=private_container
             if(res=='failure'){
-                alert('出错啦T T');
+                $.growlUI('出错啦T T');
                 return ;
             }
             else{

@@ -2,12 +2,11 @@
 #coding=utf-8
 #****************************************************
 # Author: 徐叶佳 - xyj.asmy@gmail.com
-# Last modified: 2011-09-24 23:06
+# Last modified: 2011-10-10 14:18
 # Filename: workspace/swift_app/utils.py
 # Description:一些辅助类和方法
 #****************************************************
 import os
-import urllib
 import urllib2
 import zipfile
 from swift.common import client
@@ -62,6 +61,12 @@ class Object(object):
     def get_name(self):
         return self.name
 
+def clear_temp_dir():
+    """清理临时文件夹"""
+    if len(os.listdir(temp_dir))>10:
+        for f in os.listdir(temp_dir):
+            os.remove(os.path.join(temp_dir,f))
+
 def get_container_list():
     item_list = client.get_account(auth_url, auth_token)[1]
     container_list = []
@@ -80,8 +85,7 @@ def get_object_list(container):
 
 def download_single_file(container_name, obj_name):
     """下载单个object"""
-    for f in os.listdir(temp_dir):
-        os.remove(os.path.join(temp_dir,f))
+    clear_temp_dir()
     try:
         content = client.get_object(auth_url, auth_token,
                 container_name, obj_name)[1]
@@ -95,6 +99,7 @@ def download_single_file(container_name, obj_name):
 
 def download_multi_files(container_name,objs):
     """将多个objets打包成zip文件下载"""
+    clear_temp_dir()
     for f in os.listdir(temp_dir):
         os.remove(os.path.join(temp_dir,f))
     temp_zip_path = os.path.join(temp_dir, 'all_in_one.zip')
